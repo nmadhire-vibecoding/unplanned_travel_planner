@@ -266,3 +266,10 @@ local_config.py
 
 # Profiling
 .prof
+# uv (Python package manager) artifacts
+# If you prefer to commit the lockfile for reproducible builds, remove 'uv.lock'.
+uv.lock
+.uv/
+.uv-cache/
+.uv_workspace/
+
