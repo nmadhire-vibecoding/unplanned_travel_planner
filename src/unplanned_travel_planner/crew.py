@@ -20,33 +20,59 @@ class UnplannedTravelPlanner():
     # If you would like to add tools to your agents, you can learn more about it here:
     # https://docs.crewai.com/concepts/agents#agent-tools
     @agent
-    def researcher(self) -> Agent:
+    def flight_researcher(self) -> Agent:
         return Agent(
-            config=self.agents_config['researcher'], # type: ignore[index]
-            verbose=True
+            config=self.agents_config['flight_researcher'],  # type: ignore[index]
+            verbose=True,
         )
 
     @agent
-    def reporting_analyst(self) -> Agent:
+    def hotel_researcher(self) -> Agent:
         return Agent(
-            config=self.agents_config['reporting_analyst'], # type: ignore[index]
-            verbose=True
+            config=self.agents_config['hotel_researcher'],  # type: ignore[index]
+            verbose=True,
+        )
+
+    @agent
+    def sightseeing_researcher(self) -> Agent:
+        return Agent(
+            config=self.agents_config['sightseeing_researcher'],  # type: ignore[index]
+            verbose=True,
+        )
+
+    @agent
+    def itinerary_planner(self) -> Agent:
+        return Agent(
+            config=self.agents_config['itinerary_planner'],  # type: ignore[index]
+            verbose=True,
         )
 
     # To learn more about structured task outputs,
     # task dependencies, and task callbacks, check out the documentation:
     # https://docs.crewai.com/concepts/tasks#overview-of-a-task
     @task
-    def research_task(self) -> Task:
+    def flight_research_task(self) -> Task:
         return Task(
-            config=self.tasks_config['research_task'], # type: ignore[index]
+            config=self.tasks_config['flight_research_task'],  # type: ignore[index]
         )
 
     @task
-    def reporting_task(self) -> Task:
+    def hotel_research_task(self) -> Task:
         return Task(
-            config=self.tasks_config['reporting_task'], # type: ignore[index]
-            output_file='report.md'
+            config=self.tasks_config['hotel_research_task'],  # type: ignore[index]
+        )
+
+    @task
+    def sightseeing_research_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['sightseeing_research_task'],  # type: ignore[index]
+        )
+
+    @task
+    def itinerary_planning_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['itinerary_planning_task'],  # type: ignore[index]
+            output_file='itinerary.md'
         )
 
     @crew
@@ -56,9 +82,8 @@ class UnplannedTravelPlanner():
         # https://docs.crewai.com/concepts/knowledge#what-is-knowledge
 
         return Crew(
-            agents=self.agents, # Automatically created by the @agent decorator
-            tasks=self.tasks, # Automatically created by the @task decorator
+            agents=self.agents,  # Automatically created by the @agent decorator
+            tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
-            # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
         )

@@ -1,17 +1,52 @@
-research_task:
+flight_research_task:
   description: >
-    Conduct a thorough research about {topic}
-    Make sure you find any interesting and relevant information given
-    the current year is {current_year}.
+    Research 5-8 viable flight options for the trip. Origin: {origin}. Destination: {destination}.
+    Departure date: {departure_date}. Return date (if any): {return_date}. Travelers: {party_size}.
+    Consider nearby alternate airports, total travel time, layover quality, price range (for {party_size} people if possible), airline reliability,
+    and cabin class flexibility. Highlight notable trade-offs (cheaper vs shorter, etc.). Note if splitting tickets helps for {party_size}.
+    Keep the overall trip budget of ${total_budget_usd} USD in mind when recommending fare ranges.
   expected_output: >
-    A list with 10 bullet points of the most relevant information about {topic}
-  agent: researcher
+    A markdown list of 5-8 flight options. Each entry MUST include: route (with airport codes), airlines, total duration,
+    number of stops, layover airports, approximate fare estimate (currency if provided: {currency}), pros/cons, and any tip.
+  agent: flight_researcher
 
-reporting_task:
+hotel_research_task:
   description: >
-    Review the context you got and expand each topic into a full section for a report.
-    Make sure the report is detailed and contains any and all relevant information.
+    Identify 5-7 lodging options for {party_size} travelers near areas aligned to preferences: style={lodging_style}, budget tier={budget_tier}.
+    Prioritize safety, transit accessibility, walkability to attractions, and neighborhood character.
+    Provide variety across price bands and indicate room type suitability (e.g., triple, connecting, suite) for {party_size}.
+    Target an allocation that reasonably fits within the total trip budget of ${total_budget_usd} USD.
   expected_output: >
-    A fully fledged report with the main topics, each with a full section of information.
-    Formatted as markdown without '```'
-  agent: reporting_analyst
+    A markdown table with columns: Name | Neighborhood | Category (budget/mid/premium) | Approx Nightly Rate {currency} | Why Recommended.
+    Follow with a short paragraph of comparative analysis and booking timing advice.
+  agent: hotel_researcher
+
+sightseeing_research_task:
+  description: >
+    Curate 10-15 activities for {destination} matching interests: {interests}. Plan with {party_size} travelers in mind (queue management, group suitability).
+    Include a mix of iconic sights, hidden gems, local food spots, cultural experiences, and optionally nature or day trip ideas. Cluster by geography
+    or theme. Note opening hours windows or best time of day when relevant. Flag any requiring pre-booking for {party_size}.
+  expected_output: >
+    Grouped markdown sections: "Attractions", "Food & Drink", "Experiences", "Neighborhood Walks / Clusters".
+    Bullet points with: Name, one-line hook, area, suggested duration, booking need (Yes/No), ideal time of day.
+  agent: sightseeing_researcher
+
+itinerary_planning_task:
+  description: >
+    Using the researched flights, hotels, and activities, build a balanced day-by-day itinerary for {num_days} days
+    in {destination} for {party_size} travelers. Assume arrival per earliest recommended inbound flight option. Sequence activities to minimize
+    backtracking and balance energy (heavier sightseeing alternating with lighter segments). Include meal placeholders sized for {party_size}
+    and evening suggestions. Provide rationale for sequencing and highlight buffer times plus any group coordination tips.
+    Provide a high-level budget allocation summary (flights vs lodging vs activities/food) ensuring it fits within ${total_budget_usd} USD.
+  expected_output: >
+    Markdown itinerary:
+    - Overview Summary (travel theme, pacing philosophy)
+    - Daily sections: Day X (Weekday) with Morning / Midday / Afternoon / Evening blocks
+      Each block: activity names (from previous tasks), short justification, approximate time ranges.
+    - Lodging recap (why chosen cluster) and Transit Tips section
+    - Optional Enhancements / Alternatives list
+  agent: itinerary_planner
+  context:
+    - flight_research_task
+    - hotel_research_task
+    - sightseeing_research_task
