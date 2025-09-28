@@ -153,6 +153,47 @@ pytest -q
 * Add weather-aware daily rearrangement
 * Introduce user preference persistence in `knowledge/`
 
+## Knowledge Base
+
+The `knowledge/` directory provides persistent contextual guidance consumed by the agents (if you choose to wire
+these documents as knowledge sources in CrewAI or manually feed excerpts into prompts later). While not yet
+programmatically ingested in this minimal scaffold, the structure is designed to map cleanly to future
+`Crew(knowledge=...)` usage.
+
+### Structure
+```
+knowledge/
+	user_preference.txt                 # Structured traveler + preference profile
+	guides/
+		flight_research.md               # Heuristics for flight option evaluation
+		hotel_research.md                # Lodging curation rules & data points
+		sightseeing_research.md          # Activity discovery & tagging guidance
+		itinerary_planning.md            # Day-by-day synthesis structure
+		budget_allocation.md             # Shared budget percentage heuristics
+```
+
+### user_preference.txt Format
+The file uses labeled sections (e.g., `USER_PROFILE`, `TRIP_PREFERENCES`, `FLIGHT_PREFERENCES`, etc.) allowing future
+parsing or selective injection. Update values (e.g., home base, lodging preferences, splurge rules) to influence tone
+and prioritization.
+
+### How To Extend
+Add new markdown files under `knowledge/guides/` for:
+- Seasonal adjustments (e.g., `seasonal_considerations.md`)
+- Local transit tips
+- Safety advisories
+
+Then expose them to the crew by either:
+1. Concatenating contents and feeding as context for critical tasks, or
+2. Using CrewAI's knowledge loading (`Crew(knowledge=[...])`) when integrating that feature.
+
+### Updating Preferences
+Edit `knowledge/user_preference.txt` and rerun; no restart hook required unless you later implement caching.
+
+### Future Automation (Ideas)
+- Parse `user_preference.txt` into a dict and auto-inject dynamic constraints (e.g., `max_major_anchors_per_day`).
+- Build a small tool that modifies preferences interactively and commits changes.
+
 ## Troubleshooting
 
 ### pylance wheel not found / uv sync failure

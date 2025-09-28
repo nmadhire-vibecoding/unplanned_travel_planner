@@ -1,4 +1,71 @@
-User name is John Doe.
-User is an AI Engineer.
-User is interested in AI Agents.
-User is based in San Francisco, California.
+USER_PROFILE:
+	name: Naveen Madhire
+	home_base: San Francisco, CA, USA
+	traveler_type: "Culture & Food Explorer"
+	ai_background: true
+
+TRIP_PREFERENCES:
+	pacing: "Balanced (mix of structured anchors + flexible blocks)"
+	lodging_style: "Boutique, walkable, character neighborhoods"
+	budget_tier: "mid"
+	interests_primary:
+		- culture
+		- food
+		- tech
+		- hidden neighborhoods
+	interests_secondary:
+		- contemporary art
+		- coffee
+		- urban design
+	dietary_notes: "No strict restrictions; enjoys local specialties"
+	mobility: "No limitations"
+
+FLIGHT_PREFERENCES:
+	seat_class_preference: "Economy + value premium upgrade if <20% markup"
+	max_layovers: 1
+	prefer_non_overnight_layover: true
+	flexibility_shift_days: 1  # +/- days willing to consider for better pricing
+	loyalty_alliances_interest: ["Star Alliance", "Oneworld"]
+
+LODGING_PREFERENCES:
+	safety_priority: high
+	walkability_priority: high
+	max_transfer_time_airport_minutes: 70
+	room_type_hint: "Queen or Twin for 2 travelers"
+	noise_sensitivity: medium
+
+ACTIVITY_PREFERENCES:
+	morning_energy: high
+	evening_energy: medium
+	must_include:
+		- "Local market experience"
+		- "Neighborhood food crawl"
+	avoid:
+		- "Overly commercial tourist traps unless iconic"
+	dwell_time_tolerance_hours_max: 3
+
+ITINERARY_STYLE:
+	buffer_hours_per_day: 1.5
+	max_major_anchors_per_day: 3
+	variety_emphasis: true
+	prefer_geographic_clustering: true
+
+BUDGET_HEURISTICS:
+	notes: "Keep flight + lodging under ~75% of total to preserve food & experience flexibility."
+	splurge_rules:
+		- "Allow one premium dining reservation if under daily average by prior day"
+		- "Consider tech museum add-on if under activity spend for 2 consecutive days"
+
+COMMUNICATION_TONE:
+	style: "Concise, analytical, but with traveler-friendly phrasing"
+	avoid: ["generic hype", "unverified superlatives"]
+	include_contextual_rationale: true
+
+OUTPUT_PREFERENCES:
+	flight_options_limit: 8
+	lodging_options_limit: 7
+	sightseeing_clusters_label: true
+	show_daily_budget_flag: true
+	include_alternatives_section: true
+
+VERSION: 1.0
