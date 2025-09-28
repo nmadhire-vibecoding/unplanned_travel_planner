@@ -1,7 +1,9 @@
 from crewai import Agent, Crew, Process, Task
+from crewai.llm import LLM
 from crewai.project import CrewBase, agent, crew, task
 from crewai.agents.agent_builder.base_agent import BaseAgent
 from typing import List
+import os
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
 # https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
@@ -21,30 +23,38 @@ class UnplannedTravelPlanner():
     # https://docs.crewai.com/concepts/agents#agent-tools
     @agent
     def flight_researcher(self) -> Agent:
+        llm = self._maybe_gemini_llm()
         return Agent(
             config=self.agents_config['flight_researcher'],  # type: ignore[index]
             verbose=True,
+            llm=llm,
         )
 
     @agent
     def hotel_researcher(self) -> Agent:
+        llm = self._maybe_gemini_llm()
         return Agent(
             config=self.agents_config['hotel_researcher'],  # type: ignore[index]
             verbose=True,
+            llm=llm,
         )
 
     @agent
     def sightseeing_researcher(self) -> Agent:
+        llm = self._maybe_gemini_llm()
         return Agent(
             config=self.agents_config['sightseeing_researcher'],  # type: ignore[index]
             verbose=True,
+            llm=llm,
         )
 
     @agent
     def itinerary_planner(self) -> Agent:
+        llm = self._maybe_gemini_llm()
         return Agent(
             config=self.agents_config['itinerary_planner'],  # type: ignore[index]
             verbose=True,
+            llm=llm,
         )
 
     # To learn more about structured task outputs,
@@ -87,3 +97,23 @@ class UnplannedTravelPlanner():
             process=Process.sequential,
             verbose=True,
         )
+
+    # Internal helper to construct a Gemini LLM via CrewAI wrapper if env vars request it
+    def _maybe_gemini_llm(self):  # type: ignore[override]
+        if os.getenv("USE_GEMINI", "1") == "0":
+            return None
+        api_key = os.getenv("GOOGLE_API_KEY")
+        if not api_key:
+            return None
+        # CrewAI LLM wrapper accepts provider-specific params
+        model = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+        temperature = float(os.getenv("GEMINI_TEMPERATURE", "0.7"))
+        try:
+            return LLM(
+                model=model,
+                provider="google",
+                api_key=api_key,
+                temperature=temperature,
+            )
+        except Exception:
+            return None

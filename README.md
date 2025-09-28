@@ -153,3 +153,84 @@ pytest -q
 * Add weather-aware daily rearrangement
 * Introduce user preference persistence in `knowledge/`
 
+## Troubleshooting
+
+### pylance wheel not found / uv sync failure
+If you see an error similar to:
+
+```
+error: Distribution `pylance==0.37.0` can't be installed because it doesn't have a source distribution or wheel for the current platform
+```
+
+This came from installing `crewai[tools]` which pulled an optional dependency that bundled a `pylance` wheel not built for your specific macOS architecture (e.g. x86_64 on macOS 14 when only arm64 / universal wheels are present).
+
+Fix:
+1. Remove the extra: change dependency from `crewai[tools]` to just `crewai` in `pyproject.toml` (already applied here).
+2. Reinstall dependencies:
+	```bash
+	pip install -e .
+	```
+3. If using `uv`, clear its cache (optional):
+	```bash
+	uv cache clean
+	uv sync
+	```
+
+If you actually need the tool extras later, pin a compatible version or exclude problematic transitive dependencies.
+
+## Using Google Gemini Flash LLM
+
+This project can optionally use the Google Gemini Flash model for all agents if you provide a Google API key.
+
+### 1. Install Dependencies
+Dependencies were added to `pyproject.toml`:
+* `google-generativeai`
+* `langchain-google-genai`
+
+Reinstall (editable):
+```bash
+pip install -e .
+```
+
+### 2. Set Environment Variables
+At minimum set your API key:
+```bash
+export GOOGLE_API_KEY="YOUR_KEY_HERE"
+```
+
+Optional overrides:
+```bash
+export GEMINI_MODEL="gemini-1.5-flash"   # default
+export GEMINI_TEMPERATURE=0.7             # float
+export USE_GEMINI=1                       # set to 0 to force disable even if key present
+```
+
+You can put these in a `.env` file if you have an environment loader, or export them in your shell profile.
+
+### 3. How It Works
+Each agent factory in `crew.py` calls an internal helper that builds a CrewAI `LLM` wrapper with provider=`google` when:
+* `GOOGLE_API_KEY` is set, and
+* `USE_GEMINI` is not `0`.
+
+Environment variables control model and temperature. If any error occurs or the key is absent, the
+agent simply omits an explicit LLM argument and CrewAI falls back to its default provider configuration.
+
+### 4. Disabling
+Temporarily disable Gemini without unsetting the key:
+```bash
+export USE_GEMINI=0
+```
+
+### 5. Verifying
+Run a short test:
+```bash
+python -m unplanned_travel_planner.main run SFO NRT 2025-11-10 2025-11-20 2 6000
+```
+If Gemini is active you'll see output consistent with its style; otherwise defaults apply.
+
+### 6. Notes
+* Errors constructing the Gemini client are swallowed to avoid breaking core workflow.
+* Adjust temperature with the env vars above.
+* To extend: replicate the pattern inside `crew.py` adding conditional branches for other providers (e.g. OpenAI, Anthropic).
+
+
